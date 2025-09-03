@@ -3,31 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trivia TGS — Pregunta a Pregunta</title>
-  <style>
-    :root{
-      --bg:#0f1222;--card:#171a2c;--muted:#9aa3b2;--text:#e9ecf1;
-      --accent:#7c5cff;--ok:#2db36c;--bad:#e35b5b;
-    }
-    body{margin:0;font-family:sans-serif;color:var(--text);background:var(--bg);}
-    .app{max-width:700px;margin:auto;padding:20px;}
-    header{text-align:center;margin-bottom:16px;}
-    .tabs{display:flex;justify-content:center;gap:8px;margin:10px 0;}
-    .tab{padding:10px 18px;border-radius:999px;cursor:pointer;
-      background:#222;color:var(--text);border:0;}
-    .tab.active{background:var(--accent);color:#fff;}
-    .question-box{background:var(--card);padding:20px;border-radius:16px;
-      box-shadow:0 6px 18px rgba(0,0,0,.4);}
-    .choices{margin:14px 0;display:grid;gap:8px;}
-    label{cursor:pointer;display:block;padding:8px;border-radius:8px;
-      background:rgba(255,255,255,0.05);}
-    label:hover{background:rgba(255,255,255,0.1);}
-    button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;}
-    .btn-primary{background:var(--accent);color:white;}
-    .feedback{margin-top:10px;font-weight:600;}
-    .correct{color:var(--ok);} .incorrect{color:var(--bad);}
-    .hidden{display:none;}
-  </style>
+  <title>Trivia TGS — Revisión</title>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 <div class="app">
@@ -40,23 +17,47 @@
   </header>
 
   <main>
+    <!-- Unidad 1 -->
     <section id="u1" class="unit visible">
+      <div class="score">
+        Correctas: <span id="score-u1">0</span> / <span id="total-u1">0</span><br>
+        Restantes: <span id="rest-u1">0</span>
+      </div>
       <div class="question-box">
         <div id="qtext-u1"></div>
         <div class="choices" id="choices-u1"></div>
-        <button id="check-u1" class="btn-primary">Comprobar</button>
+        <div class="actions">
+          <button id="check-u1" class="btn-primary">Comprobar</button>
+          <button id="next-u1" class="hidden">Siguiente</button>
+          <button id="reset-u1">Reiniciar</button>
+        </div>
         <div id="feedback-u1" class="feedback"></div>
-        <button id="next-u1" class="hidden">Siguiente</button>
+      </div>
+      <div class="queue-box">
+        <h3>Preguntas en cola por fallos:</h3>
+        <ul id="cola-u1"></ul>
       </div>
     </section>
 
+    <!-- Unidad 2 -->
     <section id="u2" class="unit hidden">
+      <div class="score">
+        Correctas: <span id="score-u2">0</span> / <span id="total-u2">0</span><br>
+        Restantes: <span id="rest-u2">0</span>
+      </div>
       <div class="question-box">
         <div id="qtext-u2"></div>
         <div class="choices" id="choices-u2"></div>
-        <button id="check-u2" class="btn-primary">Comprobar</button>
+        <div class="actions">
+          <button id="check-u2" class="btn-primary">Comprobar</button>
+          <button id="next-u2" class="hidden">Siguiente</button>
+          <button id="reset-u2">Reiniciar</button>
+        </div>
         <div id="feedback-u2" class="feedback"></div>
-        <button id="next-u2" class="hidden">Siguiente</button>
+      </div>
+      <div class="queue-box">
+        <h3>Preguntas en cola por fallos:</h3>
+        <ul id="cola-u2"></ul>
       </div>
     </section>
   </main>
@@ -64,79 +65,384 @@
 
 <script>
 const preguntasUnidad1 = [
-  {text:"1.1) ¿Cuáles son palabras clave del concepto de sistema?",
-   choices:["Conjunto, elementos, interacción, objetivo, entorno, límite",
-            "Partes aisladas sin objetivo","Solo hardware y software","Ciencia clásica"],
-   answer:0},
-  {text:"1.1) Para la FIA-UES, ¿cuál es el suprasistema más adecuado?",
-   choices:["La FIA","Cada escuela","La UES","El Ministerio"],answer:2},
-  {text:"1.1) Equifinalidad en un reporte de ventas significa:",
-   choices:["Solo una forma de hacerlo","Varios caminos distintos al mismo fin","No depende de procesos","Surge solo"],
-   answer:1},
-  {text:"1.1) En la educación de un Ingeniero, el 'límite del sistema' es:",
-   choices:["Frontera universidad/entorno","Edad máxima","Nota mínima","Número de docentes"],answer:0},
-  {text:"1.2.3) Se dice jerárquico porque:",choices:["No tiene subsistemas","Siempre cerrado",
-    "Parte de subsistemas y de un suprasistema","No interactúa"],answer:2}
+  {
+    id:"1",
+    text:"1.1) ¿Cuáles son palabras clave del concepto de sistema?",
+    choices:[
+      "Conjunto, elementos, interacción, objetivo, entorno, límite, subsistema, autocontrol",
+      "Partes aisladas sin objetivo",
+      "Solo hardware y software",
+      "Concepto exclusivo de informática"
+    ],
+    answer:0
+  },
+  {
+    id:"2",
+    text:"1.1) ¿Cuál es el suprasistema más adecuado para la FIA-UES?",
+    choices:["La FIA","Cada escuela","La UES","El Ministerio de Educación"],
+    answer:2
+  },
+  {
+    id:"3",
+    text:"1.1) La equifinalidad en un reporte de ventas significa:",
+    choices:[
+      "Solo existe un camino posible",
+      "Diferentes caminos que llegan al mismo fin",
+      "No depende de procesos",
+      "Ocurre de forma aleatoria"
+    ],
+    answer:1
+  },
+  {
+    id:"4",
+    text:"1.1) En la educación de un ingeniero en sistemas, ¿qué representa el límite del sistema?",
+    choices:[
+      "La frontera entre lo que controla la universidad y lo que depende del entorno",
+      "La biblioteca",
+      "El mercado laboral",
+      "Los estudiantes únicamente"
+    ],
+    answer:0
+  },
+  {
+    id:"5",
+    text:"1.2.3) ¿Por qué se dice que un sistema se comporta en forma jerárquica?",
+    choices:[
+      "Porque está compuesto por subsistemas y forma parte de un suprasistema",
+      "Porque siempre obedece órdenes",
+      "Porque depende de jerarquías militares",
+      "Porque no tiene interacción"
+    ],
+    answer:0
+  },
+  {
+    id:"6",
+    text:"1.2.3) ¿Puede existir un sistema con un solo subsistema?",
+    choices:[
+      "Sí, aunque sería limitado",
+      "No, un sistema requiere siempre muchos subsistemas",
+      "Sí, pero solo en biología",
+      "No, porque no cumpliría ningún axioma"
+    ],
+    answer:0
+  },
+  {
+    id:"7",
+    text:"1.2.3) ¿Por qué la estabilidad de un sistema está relacionada con la equifinalidad?",
+    choices:[
+      "Porque aunque tenga perturbaciones, busca cumplir su objetivo",
+      "Porque evita cambios de entorno",
+      "Porque depende de un solo camino correcto",
+      "Porque no existe retroalimentación"
+    ],
+    answer:0
+  },
+  {
+    id:"8",
+    text:"1.2.3) ¿Cómo se adapta un sistema a los cambios del entorno?",
+    choices:[
+      "Con retroalimentación, aprendizaje y reorganización",
+      "Ignorando el entorno",
+      "Destruyéndose",
+      "Repitiendo los mismos procesos siempre"
+    ],
+    answer:0
+  },
+  {
+    id:"9",
+    text:"1.2.3) ¿Cómo aplica la sinergia en la familia?",
+    choices:[
+      "Los resultados en conjunto superan la suma individual",
+      "Cada miembro vive aislado",
+      "No existe relación entre miembros",
+      "Solo los padres aportan"
+    ],
+    answer:0
+  },
+  {
+    id:"10",
+    text:"1.4) ¿Cómo identificaba Ludwig Von Bertalanffy a la TGS?",
+    choices:[
+      "Como un mecanismo de integración de ciencias naturales y sociales",
+      "Como una teoría exclusiva de biología",
+      "Como una filosofía personal",
+      "Como un método de informática"
+    ],
+    answer:0
+  },
+  {
+    id:"11",
+    text:"1.4) ¿Cómo ayuda la TGS en la integración de la ciencia?",
+    choices:[
+      "Permite un lenguaje común y evita duplicación de esfuerzos",
+      "Divide las ciencias en partes aisladas",
+      "Rechaza el uso de modelos",
+      "Solo aplica en matemáticas"
+    ],
+    answer:0
+  },
+  {
+    id:"12",
+    text:"1.4) Ejemplo de la premisa: todo sistema existe dentro de otro sistema",
+    choices:[
+      "La Facultad de Ingeniería existe dentro de la UES",
+      "Una piedra en el suelo",
+      "Un número entero",
+      "Un circuito eléctrico aislado"
+    ],
+    answer:0
+  },
+  {
+    id:"13",
+    text:"1.4) ¿Cómo aplicar los objetivos de la TGS en sistemas informáticos?",
+    choices:[
+      "Con modularidad, interacción y terminología común",
+      "Ignorando principios sistémicos",
+      "Solo con hardware",
+      "Solo en matemáticas puras"
+    ],
+    answer:0
+  },
+  {
+    id:"14",
+    text:"1.5) ¿Con el surgimiento de la TGS, la ciencia clásica perdió validez?",
+    choices:[
+      "No, sigue siendo válida y complementada por la TGS",
+      "Sí, fue sustituida completamente",
+      "Solo se aplica en ciencias sociales",
+      "Solo en informática"
+    ],
+    answer:0
+  },
+  {
+    id:"15",
+    text:"1.5) ¿Cómo se visualiza la TGS como paradigma científico?",
+    choices:[
+      "Como un paradigma holístico e integrador",
+      "Como un método aislado de biología",
+      "Como un sistema cerrado",
+      "Como un modelo de hardware"
+    ],
+    answer:0
+  },
+  {
+    id:"16",
+    text:"1.5) ¿Cómo se identifica el Sistema Generalizado que lleva al pensamiento sistémico?",
+    choices:[
+      "Al comprender la realidad como elementos interconectados",
+      "Al analizar partes aisladas",
+      "Al ignorar interacciones",
+      "Al reducir la complejidad"
+    ],
+    answer:0
+  },
+  {
+    id:"17",
+    text:"1.6) ¿Cuáles enfoques de la ciencia influyeron en la TGS?",
+    choices:[
+      "Teoría de conjuntos, cibernética, teoría de juegos, teoría de redes, etc.",
+      "Solo la biología",
+      "Solo las matemáticas básicas",
+      "Ninguno, es independiente"
+    ],
+    answer:0
+  },
+  {
+    id:"18",
+    text:"1.6) Ejemplo de enfoque empírico en TGS",
+    choices:[
+      "Analizar el tráfico vehicular desde distintas disciplinas",
+      "Crear un sistema cerrado",
+      "Ignorar los datos experimentales",
+      "Rechazar la retroalimentación"
+    ],
+    answer:0
+  }
 ];
+
 
 const preguntasUnidad2 = [
-  {text:"2.1.2) ¿Cómo asimila el ser humano un objeto observado?",
-   choices:["Modelo mental del objeto y entorno","Memoriza color","Ignora entorno","Solo medición física"],
-   answer:0},
-  {text:"2.1.2) ¿Por qué un sistema real puede representarse con más de un modelo?",
-   choices:["Todos percibimos igual","Cada observador interpreta diferente","Solo hay uno válido","Están prohibidos"],
-   answer:1},
-  {text:"2.1.2) ¿Existen los sistemas en la naturaleza?",
-   choices:["Sí materiales","No, son construcciones mentales","Solo biología","Solo informática"],answer:1},
-  {text:"2.1.2) En sistemas cerrados clásicos, el tiempo es:",
-   choices:["Irreversible","Reversible con estado actual","Inexistente","Aleatorio"],answer:1},
-  {text:"2.1.2) Criterio esencial de sistema cerrado:",
-   choices:["Intercambia info","No intercambia nada con entorno","Muchos subsistemas","Ser social"],answer:1}
+  {
+    id:"1",
+    text:"2.1.2) ¿Cómo asimila el hombre un objeto observado?",
+    choices:[
+      "Creando un modelo mental del objeto y su entorno",
+      "Solo memorizando el color",
+      "Ignorando el contexto",
+      "Midiendo solo datos físicos"
+    ],
+    answer:0
+  },
+  {
+    id:"2",
+    text:"2.1.2) ¿Por qué un sistema real puede representarse con más de un modelo?",
+    choices:[
+      "Porque cada observador interpreta diferente",
+      "Porque solo existe un modelo válido",
+      "Porque la percepción es idéntica",
+      "Porque están prohibidos varios modelos"
+    ],
+    answer:0
+  },
+  {
+    id:"3",
+    text:"2.1.2) ¿Existen los sistemas en la naturaleza?",
+    choices:[
+      "No, son construcciones mentales del hombre",
+      "Sí, como entidades físicas",
+      "Solo en biología",
+      "Solo en informática"
+    ],
+    answer:0
+  },
+  {
+    id:"4",
+    text:"2.1.2) ¿Para todos los sistemas cerrados el tiempo es reversible?",
+    choices:[
+      "Sí, en mecánica clásica conociendo el estado actual",
+      "No, nunca",
+      "Depende solo de la biología",
+      "Solo en sistemas informáticos"
+    ],
+    answer:0
+  },
+  {
+    id:"5",
+    text:"2.1.2) Mejor criterio para caracterizar un sistema cerrado:",
+    choices:[
+      "Que no intercambia energía, materia ni información con el entorno",
+      "Que siempre recibe recursos",
+      "Que interactúa con otros sistemas",
+      "Que evoluciona constantemente"
+    ],
+    answer:0
+  },
+  {
+    id:"6",
+    text:"2.1.2) Relación entre entropía e información",
+    choices:[
+      "Mayor entropía implica menos información, y viceversa",
+      "No tienen relación",
+      "Ambas crecen simultáneamente",
+      "Solo aplican en física cuántica"
+    ],
+    answer:0
+  },
+  {
+    id:"7",
+    text:"2.3) ¿Cómo se comportan los sistemas abiertos ante la entropía?",
+    choices:[
+      "Reducen entropía importando orden e información del entorno",
+      "Siempre mueren térmicamente",
+      "Ignoran el desorden",
+      "Se cierran al entorno"
+    ],
+    answer:0
+  },
+  {
+    id:"8",
+    text:"2.3) ¿Por qué los sistemas abiertos son irreversibles?",
+    choices:[
+      "Porque distintos caminos iniciales pueden llegar al mismo fin",
+      "Porque nunca logran un objetivo",
+      "Porque no existe retroalimentación",
+      "Porque carecen de estructura"
+    ],
+    answer:0
+  },
+  {
+    id:"9",
+    text:"2.3) Diferencia esencial entre sistemas abiertos y cerrados:",
+    choices:[
+      "Los abiertos interactúan con el entorno, los cerrados no",
+      "Los cerrados pueden renovarse, los abiertos no",
+      "Ambos funcionan igual",
+      "No existe diferencia"
+    ],
+    answer:0
+  }
 ];
 
-function crearTrivia(unitId, preguntas){
-  let idx=0;
+
+function crearTrivia(unitId,preguntas){
+  let cola=[...preguntas];   // Cola de preguntas pendientes
+  let score=0;
+  const total=preguntas.length;
   const qtext=document.getElementById(`qtext-${unitId}`);
   const choicesDiv=document.getElementById(`choices-${unitId}`);
   const checkBtn=document.getElementById(`check-${unitId}`);
   const feedback=document.getElementById(`feedback-${unitId}`);
   const nextBtn=document.getElementById(`next-${unitId}`);
+  const scoreBox=document.getElementById(`score-${unitId}`);
+  const totalBox=document.getElementById(`total-${unitId}`);
+  const restBox=document.getElementById(`rest-${unitId}`);
+  const resetBtn=document.getElementById(`reset-${unitId}`);
+  const colaList=document.getElementById(`cola-${unitId}`);
+  totalBox.textContent=total;
+
+  let current=null; // pregunta actual
+
+  function actualizarColaUI(){
+    restBox.textContent=cola.length;
+    colaList.innerHTML="";
+    cola.slice(1).forEach(q=>{
+      const li=document.createElement("li");
+      li.textContent=q.text;
+      colaList.appendChild(li);
+    });
+  }
 
   function mostrarPregunta(){
-    const q=preguntas[idx];
-    qtext.textContent=q.text;
+    if(cola.length===0){
+      qtext.textContent="¡Has respondido todas correctamente!";
+      choicesDiv.innerHTML="";
+      feedback.textContent="";
+      checkBtn.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+      actualizarColaUI();
+      return;
+    }
+    current=cola[0];
+    qtext.textContent=current.text;
     choicesDiv.innerHTML="";
-    q.choices.forEach((c,i)=>{
+    current.choices.forEach((c,i)=>{
       const label=document.createElement("label");
       const inp=document.createElement("input");
       inp.type="radio"; inp.name="q"; inp.value=i;
-      label.appendChild(inp);
-      label.append(" "+String.fromCharCode(65+i)+") "+c);
+      label.appendChild(inp); label.append(" "+String.fromCharCode(65+i)+") "+c);
       choicesDiv.appendChild(label);
     });
     feedback.textContent="";
+    checkBtn.classList.remove("hidden");
     nextBtn.classList.add("hidden");
+    actualizarColaUI();
   }
 
   checkBtn.addEventListener("click",()=>{
     const sel=choicesDiv.querySelector("input[name='q']:checked");
     if(!sel){feedback.textContent="Selecciona una opción.";return;}
     const val=parseInt(sel.value);
-    if(val===preguntas[idx].answer){
+    if(val===current.answer){
       feedback.textContent="¡Correcto!";feedback.className="feedback correct";
+      score++;scoreBox.textContent=score;
+      cola.shift(); // eliminar de la cola
     }else{
       feedback.textContent="Incorrecto. Respuesta correcta: "+
-        String.fromCharCode(65+preguntas[idx].answer)+") "+
-        preguntas[idx].choices[preguntas[idx].answer];
+        String.fromCharCode(65+current.answer)+") "+current.choices[current.answer];
       feedback.className="feedback incorrect";
+      cola.push(cola.shift()); // mover al final
     }
+    checkBtn.classList.add("hidden");
     nextBtn.classList.remove("hidden");
+    actualizarColaUI();
   });
 
-  nextBtn.addEventListener("click",()=>{
-    idx++;
-    if(idx<preguntas.length){mostrarPregunta();}
-    else{qtext.textContent="¡Has completado todas las preguntas!";choicesDiv.innerHTML="";feedback.textContent="";nextBtn.classList.add("hidden");}
+  nextBtn.addEventListener("click",()=>mostrarPregunta());
+
+  resetBtn.addEventListener("click",()=>{
+    cola=[...preguntas]; score=0; scoreBox.textContent=0;
+    checkBtn.classList.remove("hidden");
+    mostrarPregunta();
   });
 
   mostrarPregunta();
