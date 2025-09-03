@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trivia TGS — Unidad 1 y Unidad 2</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Trivia de Teoría General de Sistemas</h1>
+      <p class="subtitle">Selecciona una unidad, responde las preguntas tipo literal y comprueba tu puntaje.</p>
+      <div class="tabs">
+        <button class="tab active" data-unit="unidad1">Unidad 1</button>
+        <button class="tab" data-unit="unidad2">Unidad 2</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="unidad1" class="unit visible">
+        <h2>Unidad 1</h2>
+        <form id="form-unidad1" class="quiz"></form>
+        <div class="actions">
+          <button type="button" class="btn primary" id="check-u1">Calificar Unidad 1</button>
+          <button type="button" class="btn" id="reset-u1">Reiniciar</button>
+        </div>
+        <div class="result" id="result-u1"></div>
+      </section>
+
+      <section id="unidad2" class="unit">
+        <h2>Unidad 2</h2>
+        <form id="form-unidad2" class="quiz"></form>
+        <div class="actions">
+          <button type="button" class="btn primary" id="check-u2">Calificar Unidad 2</button>
+          <button type="button" class="btn" id="reset-u2">Reiniciar</button>
+        </div>
+        <div class="result" id="result-u2"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Contenido basado en las Unidades 1 y 2 (TGS). Hecho para practicar conceptos clave.</p>
+    </footer>
+  </div>
+
+  <template id="question-template">
+    <fieldset class="card question">
+      <legend class="qtext"></legend>
+      <div class="choices"></div>
+      <details class="explain">
+        <summary>Explicación</summary>
+        <div class="explain-text"></div>
+      </details>
+    </fieldset>
+  </template>
+
+  <script>
+  // ====== Banco de preguntas ======
+  // Cada pregunta: { id, text, choices: [a,b,c,d], answer: idx, explain }
+  const preguntasUnidad1 = [
+    // 1.1 (4)
+    {
+      id: "u1q1",
+      text: "1.1) ¿Cuáles son palabras clave del concepto de sistema? (selecciona la mejor opción)",
+      choices: [
+        "Conjunto, elementos, interacción, objetivo, entorno, límite",
+        "Partes aisladas sin objetivo y sin entorno",
+        "Solo hardware y software",
+        "Ciencia clásica, laboratorio, control total"
+      ],
+      answer: 0,
+      explain: "Un sistema es un conjunto de elementos interrelacionados que persiguen un objetivo en un entorno, con límites definidos."
+    },
+    {
+      id: "u1q2",
+      text: "1.1) Para la FIA-UES, ¿cuál es el suprasistema más adecuado?",
+      choices: [
+        "La Facultad de Ingeniería y Arquitectura (FIA)",
+        "Cada escuela (p. ej., Sistemas, Civil)",
+        "La Universidad de El Salvador (UES)",
+        "El Ministerio de Hacienda"
+      ],
+      answer: 2,
+      explain: "La FIA forma parte de la UES, por tanto la UES es el suprasistema y la FIA es el sistema."
+    },
+    {
+      id: "u1q3",
+      text: "1.1) Equifinalidad en un reporte de ventas del supermercado significa que:",
+      choices: [
+        "Solo hay una forma correcta de obtenerlo",
+        "Puede lograrse por diferentes caminos (POS, hojas de cálculo, ERP)",
+        "No depende de procesos ni datos",
+        "El reporte surge sin intervención humana"
+      ],
+      answer: 1,
+      explain: "La equifinalidad indica que se puede alcanzar la misma meta con distintos insumos y procesos."
+    },
+    {
+      id: "u1q4",
+      text: "1.1) En la educación de un Ingeniero en Sistemas, el 'límite del sistema' se refiere a:",
+      choices: [
+        "La frontera entre lo que controla la universidad y lo que pertenece al entorno",
+        "La edad máxima del estudiante",
+        "La nota mínima para aprobar",
+        "El número de docentes por asignatura"
+      ],
+      answer: 0,
+      explain: "El límite separa sistema y ambiente; en este caso, lo controlado por la institución versus factores externos."
+    },
+
+    // 1.2.3 (5)
+    {
+      id: "u1q5",
+      text: "1.2.3) Se dice que un sistema se comporta de forma jerárquica porque:",
+      choices: [
+        "No tiene subsistemas",
+        "Siempre es cerrado",
+        "Está formado por subsistemas y a su vez es parte de un suprasistema",
+        "No interactúa con nada"
+      ],
+      answer: 2,
+      explain: "Axiomas: todo sistema tiene subsistemas y es parte de un suprasistema."
+    },
+    {
+      id: "u1q6",
+      text: "1.2.3) ¿Puede existir un sistema con un solo subsistema?",
+      choices: [
+        "Sí, aunque es un caso limitado, cumple que 'todo sistema está constituido por subsistemas'",
+        "No, por definición debe tener al menos 3",
+        "Solo en sistemas físicos",
+        "Solo en sistemas sociales"
+      ],
+      answer: 0,
+      explain: "El axioma se cumple con uno o más subsistemas; múltiples suelen ser prácticos, pero no es obligatorio."
+    },
+    {
+      id: "u1q7",
+      text: "1.2.3) La estabilidad se relaciona con la equifinalidad porque:",
+      choices: [
+        "Impide el cambio",
+        "Permite que el sistema logre sus objetivos por distintos caminos ante perturbaciones",
+        "Elimina la necesidad de objetivos",
+        "Solo aplica a sistemas cerrados"
+      ],
+      answer: 1,
+      explain: "Equifinalidad ayuda a mantener el rumbo del sistema pese a cambios, sosteniendo su estabilidad."
+    },
+    {
+      id: "u1q8",
+      text: "1.2.3) Un sistema se adapta al entorno principalmente mediante:",
+      choices: [
+        "Retroalimentación, aprendizaje y ajustes estructurales/procesos",
+        "Ignorar el entorno",
+        "Reducir sus objetivos",
+        "Aumentar sus límites hasta abarcar todo"
+      ],
+      answer: 0,
+      explain: "Principio de adaptabilidad: los sistemas se ajustan a cambios del entorno mediante feedback y reconfiguración."
+    },
+    {
+      id: "u1q9",
+      text: "1.2.3) La sinergia en la familia implica que:",
+      choices: [
+        "El todo es menor que la suma de las partes",
+        "El todo es igual a la suma de las partes",
+        "El todo es más que la suma de las partes",
+        "No hay efectos conjuntos"
+      ],
+      answer: 2,
+      explain: "Sinergia: la cooperación familiar produce resultados superiores a los esfuerzos individuales aislados."
+    },
+
+    // 1.4 (4)
+    {
+      id: "u1q10",
+      text: "1.4) Para Bertalanffy, la TGS es principalmente:",
+      choices: [
+        "Una teoría cerrada de física clásica",
+        "Un mecanismo de integración entre ciencias naturales y sociales",
+        "Un manual de programación",
+        "Un modelo matemático único"
+      ],
+      answer: 1,
+      explain: "Bertalanffy concibió la TGS como integradora de disciplinas."
+    },
+    {
+      id: "u1q11",
+      text: "1.4) La TGS ayuda a integrar la ciencia porque:",
+      choices: [
+        "Evita toda formalización",
+        "Prohíbe el uso de modelos",
+        "Ofrece lenguaje común y principios transferibles entre disciplinas",
+        "Se enfoca solo en biología"
+      ],
+      answer: 2,
+      explain: "La TGS promueve un vocabulario y principios comunes, reduciendo duplicación de esfuerzos."
+    },
+    {
+      id: "u1q12",
+      text: "1.4) ¿Cuál NO es una de las tres premisas básicas?",
+      choices: [
+        "Los sistemas existen dentro de sistemas",
+        "Los sistemas son abiertos",
+        "Las funciones dependen de la estructura",
+        "Todos los sistemas son cerrados por definición"
+      ],
+      answer: 3,
+      explain: "Las tres premisas: (1) dentro de sistemas, (2) abiertos, (3) función depende de estructura."
+    },
+    {
+      id: "u1q13",
+      text: "1.4) Aplicación de objetivos de la TGS a sistemas informáticos:",
+      choices: [
+        "Desarrollar terminología común, leyes y formalizaciones aplicables a software",
+        "Evitar modelos y analogías",
+        "Ignorar al usuario",
+        "Eliminar la documentación"
+      ],
+      answer: 0,
+      explain: "Objetivos: terminología, leyes generales y formalización; trasladables a arquitectura y procesos de software."
+    },
+
+    // 1.5 (3)
+    {
+      id: "u1q14",
+      text: "1.5) Con la TGS, la ciencia clásica…",
+      choices: [
+        "Perdió toda validez",
+        "Sigue siendo válida y complementa a la TGS",
+        "Se volvió obsoleta para siempre",
+        "Solo aplica a sistemas sociales"
+      ],
+      answer: 1,
+      explain: "La TGS complementa; la ciencia clásica mantiene su valor, especialmente en análisis."
+    },
+    {
+      id: "u1q15",
+      text: "1.5) La TGS como paradigma científico se caracteriza por:",
+      choices: [
+        "Enfoque holístico e integrador, transdisciplinario",
+        "Reduccionismo estricto",
+        "Aislamiento de disciplinas",
+        "Anulación de modelos"
+      ],
+      answer: 0,
+      explain: "La TGS enfatiza relaciones, totalidad e integración de disciplinas."
+    },
+    {
+      id: "u1q16",
+      text: "1.5) El sistema generalizado del pensamiento sistémico busca:",
+      choices: [
+        "Ver partes aisladas",
+        "Identificar elementos, patrones e interacciones para comprender y resolver",
+        "Eliminar consecuencias a largo plazo",
+        "Evitar la retroalimentación"
+      ],
+      answer: 1,
+      explain: "El pensamiento sistémico integra patrones, interacciones y consecuencias de distinto plazo."
+    },
+
+    // 1.6 (3)
+    {
+      id: "u1q17",
+      text: "1.6) ¿Cuál de estos enfoques NO figura entre los que influyeron en la TGS?",
+      choices: [
+        "Teoría de colas",
+        "Cibernética",
+        "Teoría de decisiones",
+        "Astrología"
+      ],
+      answer: 3,
+      explain: "La astrología no forma parte de los enfoques científicos citados."
+    },
+    {
+      id: "u1q18",
+      text: "1.6) La cibernética se centra en:",
+      choices: [
+        "Adivinación",
+        "Control y retroalimentación en sistemas",
+        "Evitar la información",
+        "Solo estructuras físicas"
+      ],
+      answer: 1,
+      explain: "Cibernética: comunicación, control y feedback entre sistema y entorno."
+    },
+    {
+      id: "u1q19",
+      text: "1.6) El primer enfoque (empírico) de TGS consiste en:",
+      choices: [
+        "Construir un modelo teórico a partir de fenómenos observados en distintas disciplinas",
+        "Ignorar los datos empíricos",
+        "Partir de axiomas sin observar",
+        "Solo usar álgebra lineal"
+      ],
+      answer: 0,
+      explain: "Se parte de fenómenos reales y se construyen modelos generales que los representen."
+    }
+  ];
+
+  const preguntasUnidad2 = [
+    // 2.1.2 (6)
+    {
+      id: "u2q1",
+      text: "2.1.2) ¿Cómo asimila el ser humano un objeto observado?",
+      choices: [
+        "Creando una imagen o modelo del objeto, su entorno y sus relaciones",
+        "Memorizando su color únicamente",
+        "Ignorando el entorno",
+        "Solo mediante mediciones físicas"
+      ],
+      answer: 0,
+      explain: "Modelo mental del objeto y su relación con el entorno."
+    },
+    {
+      id: "u2q2",
+      text: "2.1.2) ¿Por qué un sistema real puede representarse con más de un modelo?",
+      choices: [
+        "Porque todos percibimos igual",
+        "Porque cada observador puede interpretar la realidad de forma diferente",
+        "Porque solo existe un modelo válido",
+        "Porque los modelos están prohibidos"
+      ],
+      answer: 1,
+      explain: "Distintas perspectivas generan distintos modelos sobre el mismo sistema."
+    },
+    {
+      id: "u2q3",
+      text: "2.1.2) ¿Existen los sistemas en la naturaleza?",
+      choices: [
+        "Sí, como objetos materiales",
+        "No, son construcciones mentales del observador",
+        "Solo en biología",
+        "Solo en informática"
+      ],
+      answer: 1,
+      explain: "Los sistemas son modelos creados en la mente para comprender la realidad."
+    },
+    {
+      id: "u2q4",
+      text: "2.1.2) En los modelos clásicos de sistemas cerrados, el tiempo es:",
+      choices: [
+        "Irreversible por definición",
+        "Reversible; conocer el estado actual permite inferir pasado y futuro",
+        "Inexistente",
+        "Aleatorio"
+      ],
+      answer: 1,
+      explain: "Mecánica racional: reversibilidad temporal en sistemas cerrados idealizados."
+    },
+    {
+      id: "u2q5",
+      text: "2.1.2) El criterio esencial para caracterizar un sistema cerrado es:",
+      choices: [
+        "Intercambiar información con el entorno",
+        "No intercambiar materia, energía ni información con el entorno",
+        "Tener muchos subsistemas",
+        "Ser social"
+      ],
+      answer: 1,
+      explain: "Un sistema cerrado está aislado de su entorno."
+    },
+    {
+      id: "u2q6",
+      text: "2.1.2) Relación y divergencia entre entropía e información:",
+      choices: [
+        "Mayor entropía implica estados más probables y menos información específica",
+        "Son idénticas",
+        "Más información siempre significa más entropía",
+        "Ninguna relación con probabilidad"
+      ],
+      answer: 0,
+      explain: "Entropía: tendencia a estados probables/orden bajo; la información se asocia a improbabilidad (neguentropía)."
+    },
+
+    // 2.3 (3)
+    {
+      id: "u2q7",
+      text: "2.3) En sistemas abiertos, respecto a entropía:",
+      choices: [
+        "Siempre aumenta sin excepción",
+        "Puede reducirse al importar entropía negativa (orden/información) desde el entorno",
+        "No existe",
+        "Es irrelevante"
+      ],
+      answer: 1,
+      explain: "Los flujos con el entorno pueden disminuir la entropía del sistema abierto."
+    },
+    {
+      id: "u2q8",
+      text: "2.3) ¿Por qué los sistemas abiertos son irreversibles?",
+      choices: [
+        "Porque siguen trayectorias predeterminadas",
+        "Por el principio de equifinalidad: pueden alcanzar un mismo fin desde distintos inicios",
+        "Porque no hay retroalimentación",
+        "Porque son cerrados"
+      ],
+      answer: 1,
+      explain: "Diferentes condiciones iniciales llevan a un mismo estado final; no se deduce un único pasado."
+    },
+    {
+      id: "u2q9",
+      text: "2.3) Diferencia esencial entre sistemas abiertos y cerrados:",
+      choices: [
+        "Abiertos interactúan con el entorno; cerrados no",
+        "Los cerrados siempre importan información",
+        "Los abiertos no tienen objetivos",
+        "No existe diferencia"
+      ],
+      answer: 0,
+      explain: "Intercambio con el entorno, comportamiento entrópico y adaptabilidad marcan la diferencia."
+    }
+  ];
+
+  // ====== Render ======
+  function renderQuiz(container, preguntas) {
+    const tpl = document.getElementById('question-template');
+    preguntas.forEach((q, idx) => {
+      const node = tpl.content.cloneNode(true);
+      node.querySelector('.qtext').textContent = (idx + 1) + ". " + q.text;
+      const choicesDiv = node.querySelector('.choices');
+      q.choices.forEach((c, i) => {
+        const id = q.id + "_c" + i;
+        const wrapper = document.createElement('label');
+        wrapper.className = "choice";
+        const input = document.createElement('input');
+        input.type = "radio";
+        input.name = q.id;
+        input.value = i;
+        input.id = id;
+        const span = document.createElement('span');
+        span.textContent = String.fromCharCode(65 + i) + ") " + c;
+        wrapper.appendChild(input);
+        wrapper.appendChild(span);
+        choicesDiv.appendChild(wrapper);
+      });
+      node.querySelector('.explain-text').textContent = q.explain;
+      container.appendChild(node);
+    });
+  }
+
+  const formU1 = document.getElementById('form-unidad1');
+  const formU2 = document.getElementById('form-unidad2');
+  renderQuiz(formU1, preguntasUnidad1);
+  renderQuiz(formU2, preguntasUnidad2);
+
+  // ====== Tabs ======
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.unit');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const unit = btn.dataset.unit;
+      sections.forEach(sec => {
+        sec.classList.toggle('visible', sec.id === unit);
+      });
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  });
+
+  // ====== Calificación ======
+  function calificar(preguntas, form, resultBox) {
+    let correctas = 0;
+    let total = preguntas.length;
+    // limpiar marcas previas
+    form.querySelectorAll('.question').forEach(q => q.classList.remove('ok','bad'));
+    preguntas.forEach(q => {
+      const selected = form.querySelector('input[name="'+q.id+'"]:checked');
+      const qCard = Array.from(form.querySelectorAll('.question')).find(el => el.querySelector('input[name="'+q.id+'"]'));
+      if (selected && Number(selected.value) === q.answer) {
+        correctas++;
+        if (qCard) qCard.classList.add('ok');
+      } else {
+        if (qCard) qCard.classList.add('bad');
+      }
+    });
+    const porcentaje = Math.round((correctas/total)*100);
+    resultBox.innerHTML = `<strong>Puntaje:</strong> ${correctas} / ${total} (${porcentaje}%)`;
+  }
+
+  document.getElementById('check-u1').addEventListener('click', () => {
+    calificar(preguntasUnidad1, formU1, document.getElementById('result-u1'));
+  });
+  document.getElementById('check-u2').addEventListener('click', () => {
+    calificar(preguntasUnidad2, formU2, document.getElementById('result-u2'));
+  });
+
+  // ====== Reset ======
+  function resetForm(form, resultBox) {
+    form.reset();
+    resultBox.textContent = "";
+    form.querySelectorAll('.question').forEach(q => q.classList.remove('ok','bad'));
+  }
+  document.getElementById('reset-u1').addEventListener('click', () => resetForm(formU1, document.getElementById('result-u1')));
+  document.getElementById('reset-u2').addEventListener('click', () => resetForm(formU2, document.getElementById('result-u2')));
+  </script>
+</body>
+</html>

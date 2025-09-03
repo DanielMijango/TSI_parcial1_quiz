@@ -1,0 +1,145 @@
+/* styles.css — Trivia TGS */
+:root{
+  --bg:#0f1222;
+  --card:#171a2c;
+  --muted:#9aa3b2;
+  --text:#e9ecf1;
+  --accent:#7c5cff;
+  --ok:#2db36c;
+  --bad:#e35b5b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji','Segoe UI Emoji', 'Segoe UI Symbol';
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 20% -10%, #1a1f3a 0, rgba(26,31,58,0) 60%), var(--bg);
+}
+
+.app{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header{
+  text-align: center;
+  margin-bottom: 16px;
+}
+.header h1{ margin: 0 0 6px; font-size: 28px; }
+.subtitle{ margin: 0 0 16px; color: var(--muted); }
+
+.tabs{
+  display:inline-flex;
+  gap:6px;
+  background: rgba(255,255,255,0.06);
+  padding:6px;
+  border-radius: 999px;
+}
+.tab{
+  border: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.tab.active{
+  background: var(--accent);
+  color: white;
+}
+
+.unit{ display:none; }
+.unit.visible{ display:block; }
+
+h2{
+  margin-top: 24px;
+  font-size: 22px;
+}
+
+.quiz{
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.card{
+  background: var(--card);
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+.question legend.qtext{
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.choices{
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.choice{
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.choice:hover{
+  background: rgba(255,255,255,0.04);
+}
+.choice input{ margin-top: 3px; }
+
+.explain{
+  margin-top: 8px;
+  color: var(--muted);
+}
+.explain > summary{
+  cursor: pointer;
+  user-select: none;
+  padding: 6px 0;
+}
+.explain-text{ padding-top: 4px; }
+
+.actions{
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn{
+  border: 1px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.btn.primary{
+  background: var(--accent);
+  border-color: transparent;
+  color: white;
+}
+
+.result{
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.footer{
+  margin-top: 28px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* feedback visual */
+.question.ok{ outline: 2px solid var(--ok); }
+.question.bad{ outline: 2px solid var(--bad); }
